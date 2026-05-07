@@ -1,11 +1,11 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { User, Mail, GraduationCap, MapPin, Award, Shield, Edit2, Camera, LogOut, CheckCircle2, Navigation, Loader2, X } from 'lucide-react';
 import { motion } from 'motion/react';
 import { cn } from '../lib/utils';
 
 export function Profile() {
-  const { user, logout, updateUser } = useAuth();
+  const { user, login, register, logout, updateUser } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [editedUser, setEditedUser] = useState(user);
   const [isUpdating, setIsUpdating] = useState(false);
@@ -13,6 +13,10 @@ export function Profile() {
   const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [isLocating, setIsLocating] = useState(false);
   const [locationError, setLocationError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setEditedUser(user);
+  }, [user]);
 
   const fetchLocation = () => {
     setIsLocating(true);
@@ -71,11 +75,8 @@ export function Profile() {
       const reader = new FileReader();
       reader.onload = (event) => {
         const base64 = event.target?.result as string;
-        setEditedUser({ ...editedUser, avatar: base64 });
+        setEditedUser(prev => prev ? ({ ...prev, avatar: base64 }) : null);
         
-        // If not in editing mode, should we also update immediately or wait for save?
-        // Let's force editing mode if an avatar is uploaded to encourage saving other info too,
-        // or just local update in editedUser.
         if (!isEditing) setIsEditing(true);
       };
       reader.readAsDataURL(file);

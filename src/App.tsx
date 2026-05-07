@@ -25,14 +25,14 @@ function AuthenticatedLayout() {
     <div className="flex h-screen bg-slate-50 font-sans antialiased text-slate-900 overflow-hidden">
       <Sidebar />
       <main className="flex-1 min-w-0 overflow-y-auto bg-[#f8fafc]">
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={location.pathname}
             className="w-full"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.3, ease: 'easeOut' }}
+            exit={{ opacity: 0, y: -5 }}
+            transition={{ duration: 0.2, ease: 'easeOut' }}
           >
             <Outlet />
           </motion.div>
@@ -56,20 +56,8 @@ function AnimatedRoutes() {
         <Route path="/stats" element={<Stats />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/wrong" element={<WrongQuestions />} />
+        <Route path="/exam-session" element={<ExamSession />} />
       </Route>
-
-      <Route path="/exam-session" element={
-        <AnimatePresence mode="wait">
-          <motion.div
-            key="exam-session"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            <ExamSession />
-          </motion.div>
-        </AnimatePresence>
-      } />
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

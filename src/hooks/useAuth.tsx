@@ -22,8 +22,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    const saved = localStorage.getItem('psa_user');
-    if (saved) setUser(JSON.parse(saved));
+    try {
+      const saved = localStorage.getItem('psa_user');
+      if (saved) setUser(JSON.parse(saved));
+    } catch (e) {
+      console.error('Failed to parse user from localStorage', e);
+      localStorage.removeItem('psa_user');
+    }
   }, []);
 
   const login = async (email: string, _: string) => {

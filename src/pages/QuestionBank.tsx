@@ -8,8 +8,10 @@ import * as XLSX from 'xlsx';
 import mammoth from 'mammoth';
 import * as pdfjs from 'pdfjs-dist';
 
-// Initialize PDF.js worker
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+// Initialize PDF.js worker lazily or safely
+if (typeof window !== 'undefined' && !pdfjs.GlobalWorkerOptions.workerSrc) {
+  pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+}
 
 export function QuestionBank() {
   const [allQuestions, setAllQuestions] = useState<Question[]>(QUESTION_BANK);

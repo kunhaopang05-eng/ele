@@ -19,7 +19,12 @@ interface ExamRecord {
 
 export function Stats() {
   const history: ExamRecord[] = useMemo(() => {
-    return JSON.parse(localStorage.getItem('psa_exam_history') || '[]');
+    try {
+      return JSON.parse(localStorage.getItem('psa_exam_history') || '[]');
+    } catch (e) {
+      console.error('Failed to parse exam history', e);
+      return [];
+    }
   }, []);
 
   const stats = useMemo(() => {

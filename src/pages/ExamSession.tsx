@@ -20,8 +20,13 @@ export function ExamSession() {
 
   // Load bookmarks
   useEffect(() => {
-    const saved = JSON.parse(localStorage.getItem('psa_bookmarks') || '[]');
-    setBookmarks(saved);
+    try {
+      const saved = JSON.parse(localStorage.getItem('psa_bookmarks') || '[]');
+      setBookmarks(saved);
+    } catch (e) {
+      console.error('Failed to load bookmarks', e);
+      setBookmarks([]);
+    }
   }, []);
 
   const toggleBookmark = (id: string) => {
