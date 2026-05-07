@@ -1,0 +1,6 @@
+{
+  "name": "电力系统分析专业题库系统",
+  "description": "一个功能完善、专业化的电力系统分析在线学习与考试平台。支持随机出题、自定义组卷、Word导出、在线答题及实时评测功能。",
+  "requestFramePermissions": ["geolocation"],
+  "majorCapabilities": []
+}
