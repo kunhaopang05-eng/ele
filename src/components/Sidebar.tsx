@@ -6,7 +6,7 @@ import { cn } from '../lib/utils';
 import { motion } from 'motion/react';
 
 export function Sidebar() {
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
   
   const navItems = [
     { icon: LayoutDashboard, label: '概览', to: '/' },
@@ -73,11 +73,15 @@ export function Sidebar() {
       <div className="p-6 border-t border-slate-100">
         <div className="flex items-center gap-3 bg-slate-50 p-4 rounded-2xl mb-4 border border-slate-100/50">
           <div className="w-12 h-12 bg-white border border-slate-200 rounded-2xl flex items-center justify-center text-slate-300 overflow-hidden shadow-sm">
-             <User className="w-7 h-7" />
+             {user?.avatar ? (
+                <img src={user.avatar} alt="Avatar" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+             ) : (
+                <User className="w-7 h-7" />
+             )}
           </div>
           <div className="overflow-hidden">
-            <p className="text-sm font-black text-slate-900 truncate tracking-tight">陈教授 (校正员)</p>
-            <p className="text-[10px] font-bold text-slate-400 truncate uppercase tracking-widest">电力工程系</p>
+            <p className="text-sm font-black text-slate-900 truncate tracking-tight">{user?.name || '未登录'}</p>
+            <p className="text-[10px] font-bold text-slate-400 truncate uppercase tracking-widest">{user?.major || '暂无专业'}</p>
           </div>
         </div>
         <motion.button 

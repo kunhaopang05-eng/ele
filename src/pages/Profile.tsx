@@ -1,14 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { User, Mail, GraduationCap, MapPin, Award, Shield, Edit2, Camera, LogOut, CheckCircle2, Navigation, Loader2, X } from 'lucide-react';
 import { motion } from 'motion/react';
 import { cn } from '../lib/utils';
 
 export function Profile() {
-  const { user, logout } = useAuth();
+  const { user, logout, updateUser } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [editedUser, setEditedUser] = useState(user);
   const [isUpdating, setIsUpdating] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [isLocating, setIsLocating] = useState(false);
   const [locationError, setLocationError] = useState<string | null>(null);
@@ -45,8 +46,10 @@ export function Profile() {
   };
   
   const handleSave = () => {
+     if (!editedUser) return;
      setIsUpdating(true);
      setTimeout(() => {
+        updateUser(editedUser);
         setIsUpdating(false);
         setIsEditing(false);
         alert('资料更新成功！');
@@ -54,7 +57,29 @@ export function Profile() {
   };
 
   const handleAvatarClick = () => {
-    alert('头像上传功能开发中...');
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && editedUser) {
+      if (!file.type.startsWith('image/')) {
+        alert('请上传图片文件');
+        return;
+      }
+      
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const base64 = event.target?.result as string;
+        setEditedUser({ ...editedUser, avatar: base64 });
+        
+        // If not in editing mode, should we also update immediately or wait for save?
+        // Let's force editing mode if an avatar is uploaded to encourage saving other info too,
+        // or just local update in editedUser.
+        if (!isEditing) setIsEditing(true);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   if (!user || !editedUser) return null;
@@ -103,9 +128,20 @@ export function Profile() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
         <div className="md:col-span-1 space-y-8">
           <div className="bg-white p-10 rounded-[3rem] border border-slate-200 shadow-sm relative overflow-hidden text-center group transition-all hover:shadow-2xl hover:shadow-slate-200/50">
+            <input 
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              accept="image/*"
+              className="hidden"
+            />
             <div className="relative inline-block mb-8">
               <div className="w-40 h-40 bg-slate-50 rounded-[2.5rem] flex items-center justify-center text-slate-200 border-4 border-white shadow-2xl relative overflow-hidden">
-                 <User size={80} />
+                 {editedUser.avatar ? (
+                    <img src={editedUser.avatar} alt="Avatar" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                 ) : (
+                    <User size={80} />
+                 )}
                  <div className="absolute inset-0 bg-blue-600/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
               </div>
               <motion.button 
