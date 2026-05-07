@@ -8,9 +8,11 @@ import * as XLSX from 'xlsx';
 import mammoth from 'mammoth';
 import * as pdfjs from 'pdfjs-dist';
 
-// Initialize PDF.js worker lazily or safely
-if (typeof window !== 'undefined' && !pdfjs.GlobalWorkerOptions.workerSrc) {
-  pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+// Initialize PDF.js worker safely
+if (typeof window !== 'undefined') {
+  // Use a version that typically matches high-compatibility CDN versions
+  const pdfjsVersion = '3.4.120'; 
+  pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsVersion}/pdf.worker.min.js`;
 }
 
 export function QuestionBank() {
@@ -18,6 +20,23 @@ export function QuestionBank() {
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [selectedChapter, setSelectedChapter] = useState('全部');
+  const [renderError, setRenderError] = useState<string | null>(null);
+
+  if (renderError) {
+    return (
+      <div className="flex flex-col items-center justify-center p-20 text-center bg-white rounded-3xl m-8 border border-slate-200">
+        <X className="w-16 h-16 text-red-500 mb-6 bg-red-50 p-4 rounded-full" />
+        <h2 className="text-2xl font-bold text-slate-900 mb-2">题库加载出现错误</h2>
+        <p className="text-slate-500 mb-8 max-w-md">{renderError}</p>
+        <button 
+          onClick={() => window.location.reload()}
+          className="px-8 py-3 bg-blue-600 text-white rounded-2xl font-bold shadow-xl shadow-blue-500/20"
+        >
+          重新尝试加载
+        </button>
+      </div>
+    );
+  }
   const [selectedType, setSelectedType] = useState('全部');
   const [selectedDifficulty, setSelectedDifficulty] = useState('全部');
   const [selectedTag, setSelectedTag] = useState('全部');
